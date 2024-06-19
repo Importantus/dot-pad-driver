@@ -186,11 +186,11 @@ async function predictWebcam() {
       /*
       Here we calculate the movement of the nose in relation to our saved face sides. The result is a number between 0 and 1.
       */
-      const nouseMovementX = (nose.x - leftFaceSide.value) / (rightFaceSide.value - leftFaceSide.value);
-      const nouseMovementY = (nose.y - topFaceSide.value) / (bottomFaceSide.value - topFaceSide.value);
+      const noseMovementX = (nose.x - leftFaceSide.value) / (rightFaceSide.value - leftFaceSide.value);
+      const noseMovementY = (nose.y - topFaceSide.value) / (bottomFaceSide.value - topFaceSide.value);
 
       // @ts-ignore
-      window.ipcRenderer.send("face-move", [nouseMovementX, nouseMovementY]);
+      window.ipcRenderer.send("face-move", [noseMovementX, noseMovementY]);
     }
   }
 
