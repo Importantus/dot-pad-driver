@@ -1,9 +1,23 @@
-// This example shows how to use node-pixel using firmata as the
-// hook for the board.
 import { dispatch } from '../controller';
 import { globalShortcut } from 'electron';
+let registeredKeys = false;
 
-export function initKeyboard(onReady: () => void) {
+//TODO: Probably a better way to do this, but whatever
+function registerKeyboardEvents() {
+
+    if (registeredKeys) {
+        console.log('Removing keyboard debug event listeners...');
+        globalShortcut.unregister('num1');
+        globalShortcut.unregister('num2');
+        globalShortcut.unregister('num4');
+        globalShortcut.unregister('num5');
+        globalShortcut.unregister('num6');
+        globalShortcut.unregister('num7');
+        globalShortcut.unregister('num8');
+        globalShortcut.unregister('num9');
+        registeredKeys = false;
+        return;
+    }
     console.log('Adding keyboard debug event listeners...');
 
     globalShortcut.register('num1', () => {
@@ -15,6 +29,7 @@ export function initKeyboard(onReady: () => void) {
     globalShortcut.register('num4', () => {
         dispatch({ type: 'btn_semcirc_left' })
     });
+    //TODO: Enable Keyboard center button shortcut
     // globalShortcut.register('num5', () => {
     //     dispatch({ type: 'btn_rect_center' })
     // });
@@ -30,5 +45,15 @@ export function initKeyboard(onReady: () => void) {
     globalShortcut.register('num9', () => {
         dispatch({ type: 'btn_semcirc_right_down' })
     });
+    registeredKeys = true;
+}
+
+export function initKeyboard(onReady: () => void) {
+    globalShortcut.register('nummult', () => {
+        registerKeyboardEvents();
+    });
+    if (process.env.DEBUG_KEYBOARD_INPUT_MODE_AUTO_REGISTER) {
+        registerKeyboardEvents();
+    }
     onReady();
 }
