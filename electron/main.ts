@@ -83,7 +83,7 @@ app.on('will-quit', () => {
 
 app.whenReady().then(() => {
   createWindow()
-  if (process.env.DEBUG_KEYBOARDINPUTMODE === 'true') {
+  if (process.env.DEBUG_KEYBOARD_INPUT_MODE === 'true') {
     initKeyboard(() => {
       registerRendererEvents()
       dispatch({ type: 'bootup' })
