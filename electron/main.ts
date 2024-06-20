@@ -3,6 +3,7 @@ import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
 import { initBoard } from './board/board'
+import { initKeyboard } from './board/keyboard'
 import { dispatch } from './controller'
 import { registerRendererEvents } from './renderer/rendererToMain'
 
@@ -40,10 +41,15 @@ function createWindow() {
   })
 
   // Test active push message to Renderer-process.
-  win.webContents.on('did-finish-load', () => {
-    win?.webContents.send('main-process-message', (new Date).toLocaleString())
-    win?.webContents.openDevTools()
-  })
+
+  //TODO: Produces error: Request Autofill.enable failed. See below.
+  if (process.env.DEBUG_OPEN_DEVTOOLS_ON_STARTUP === 'true') {
+    win.webContents.on('did-finish-load', () => {
+      win?.webContents.send('main-process-message', (new Date).toLocaleString())
+      //This line openDevTools() produces the error: Request Autofill.enable failed. See electron issue #41614
+      win?.webContents.openDevTools()
+    })
+  }
 
   if (VITE_DEV_SERVER_URL) {
     win.loadURL(VITE_DEV_SERVER_URL)
@@ -77,8 +83,15 @@ app.on('will-quit', () => {
 
 app.whenReady().then(() => {
   createWindow()
-  initBoard(() => {
-    registerRendererEvents()
-    dispatch({ type: 'bootup' })
-  })
+  if (process.env.DEBUG_KEYBOARDINPUTMODE === 'true') {
+    initKeyboard(() => {
+      registerRendererEvents()
+      dispatch({ type: 'bootup' })
+    })
+  } else {
+    initBoard(() => {
+      registerRendererEvents()
+      dispatch({ type: 'bootup' })
+    })
+  }
 })
