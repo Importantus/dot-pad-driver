@@ -1,29 +1,49 @@
 import { win } from "../main"
 
+let messageQueue: { channel: string, args: any[] }[] = [];
+let isWebContentsLoaded = false;
+
 function send(channel: string, ...args: any[]) {
     if (!win) {
         console.log('No window to send message to')
         return
     }
-    win.webContents.send(channel, ...args)
+    console.log('Sending', channel, ...args)
+
+    if (isWebContentsLoaded) {
+        console.log('Sending immediately:', channel, ...args);
+        win.webContents.send(channel, ...args);
+    } else {
+        console.log('Queueing message:', channel, ...args);
+        messageQueue.push({ channel, args });
+    }
+
+    // Listen for 'did-finish-load' event
+    win.webContents.on('did-finish-load', function () {
+        isWebContentsLoaded = true;
+        console.log('Web contents finished loading.');
+
+        // Process the message queue
+        while (messageQueue.length > 0) {
+            const { channel, args } = messageQueue.shift()!;
+            console.log('Sending queued message:', channel, ...args);
+            win?.webContents.send(channel, ...args);
+        }
+    });
 }
 
 export function sendColor(color: string) {
-    console.log('Sending color', color)
     send('color', color)
 }
 
 export function sendStartFaceTracking() {
-    console.log('Sending start face tracking')
     send('start-face-tracking')
 }
 
 export function sendStopFaceTracking() {
-    console.log('Sending stop face tracking')
     send('stop-face-tracking')
 }
 
 export function sendReady() {
-    console.log('Sending ready')
     send('ready')
 }
