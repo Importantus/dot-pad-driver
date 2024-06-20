@@ -78,7 +78,16 @@ function enableCam() {
       return;
     }
 
-    const videoDevice = videoDevices[1];
+    //TODO: Make a way to select the camera device.
+    let videoDevice = videoDevices[0];
+
+    //Debugging: Force override the camera device.
+    let debugOverrideCamIndex = import.meta.env.VITE_DEBUG_OVERRIDE_WEBCAM_DEVICE_ID; 
+    if (debugOverrideCamIndex > -1){
+        console.log("DEBUG: Overriding camera device with index: ", debugOverrideCamIndex);
+        videoDevice = videoDevices[debugOverrideCamIndex];
+    }
+  
     console.log("Using video device: ", videoDevice.label);
 
     // Activate the webcam stream.
