@@ -1,14 +1,10 @@
 import { app, BrowserWindow } from 'electron'
-import { createRequire } from 'node:module'
 import { fileURLToPath } from 'node:url'
 import path from 'node:path'
-import { initBoard } from './board/board'
 import { initKeyboard } from './board/keyboard'
 import { dispatch } from './controller'
-import { registerRendererEvents } from './renderer/rendererToMain'
+import { initConnection } from './board/connection'
 
-
-const require = createRequire(import.meta.url)
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 
 // The built directory structure
@@ -85,13 +81,11 @@ app.whenReady().then(() => {
   createWindow()
   if (process.env.DEBUG_KEYBOARD_INPUT_MODE === 'true') {
     initKeyboard(() => {
-      registerRendererEvents()
       dispatch({ type: 'bootup' })
     })
   } else {
-    initBoard(() => {
-      registerRendererEvents()
-      dispatch({ type: 'bootup' })
-    })
+    // Initialize eventlisteners that check for board connection
+    initConnection()
   }
 })
+
