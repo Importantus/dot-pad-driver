@@ -1,5 +1,3 @@
-// This example shows how to use node-pixel using firmata as the
-// hook for the board.
 import { createRequire } from 'node:module'
 import { dispatch } from '../controller';
 
@@ -8,17 +6,9 @@ const require = createRequire(import.meta.url)
 const firmata = require('firmata');
 const pixel = require('node-pixel');
 
-// const opts = {};
-// if (process.argv[2] == undefined) {
-//   console.log('Please supply a device port to connect to');
-//   process.exit();
-// }
-
-const port = "COM10"
-
 export let strip: any = null;
 
-export function initBoard(onReady: () => void) {
+export function initBoard(port: string) {
     const board = new firmata.Board(port, function () {
         console.log('Firmata ready, lets add light');
 
@@ -45,6 +35,6 @@ export function initBoard(onReady: () => void) {
             }
         });
 
-        onReady();
+        dispatch({ type: 'bootup' })
     });
 }
