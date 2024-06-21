@@ -49,3 +49,11 @@ export function sendStopFaceTracking() {
 export function sendReady() {
     send('ready')
 }
+
+export function sendConntect() {
+    send('board-connected')
+}
+
+export function sendDisconnect() {
+    send('board-disconnected')
+}

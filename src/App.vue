@@ -5,6 +5,7 @@ import { ref, watch } from 'vue';
 const videoWidth = 640;
 const loading = ref(true);
 const backendReady = ref(false);
+const boardConnected = ref(false);
 const webcamRunning = ref(false);
 let video: HTMLVideoElement | null = null
 
@@ -33,6 +34,16 @@ window.ipcRenderer.on("start-face-tracking", () => {
 window.ipcRenderer.on("ready", () => {
   console.log("Backend is ready.");
   backendReady.value = true;
+});
+
+window.ipcRenderer.on("board-connected", () => {
+  console.log("Board connected.");
+  boardConnected.value = true;
+});
+
+window.ipcRenderer.on("board-disconnected", () => {
+  console.log("Board disconnected.");
+  boardConnected.value = false;
 });
 
 async function createFaceLandmarker() {
@@ -82,12 +93,12 @@ function enableCam() {
     let videoDevice = videoDevices[0];
 
     //Debugging: Force override the camera device.
-    let debugOverrideCamIndex = import.meta.env.VITE_DEBUG_OVERRIDE_WEBCAM_DEVICE_ID; 
-    if (debugOverrideCamIndex > -1){
-        console.log("DEBUG: Overriding camera device with index: ", debugOverrideCamIndex);
-        videoDevice = videoDevices[debugOverrideCamIndex];
+    let debugOverrideCamIndex = import.meta.env.VITE_DEBUG_OVERRIDE_WEBCAM_DEVICE_ID;
+    if (debugOverrideCamIndex > -1) {
+      console.log("DEBUG: Overriding camera device with index: ", debugOverrideCamIndex);
+      videoDevice = videoDevices[debugOverrideCamIndex];
     }
-  
+
     console.log("Using video device: ", videoDevice.label);
 
     // Activate the webcam stream.
@@ -214,6 +225,7 @@ createFaceLandmarker();
 
 <template>
   <div>
+    <div>Board {{ boardConnected ? 'connected' : 'not connected' }}</div>
     <div v-if="loading || !backendReady">Loading...</div>
     <div v-if="!loading && backendReady">All ready!</div>
     <div>
