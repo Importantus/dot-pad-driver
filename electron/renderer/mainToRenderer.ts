@@ -1,35 +1,37 @@
 import { win } from "../main"
 
 let messageQueue: { channel: string, args: any[] }[] = [];
-let isWebContentsLoaded = false;
 
 function send(channel: string, ...args: any[]) {
     if (!win) {
         console.log('No window to send message to')
         return
     }
+    // Only set up the listener once
+    if (win.webContents.isLoading() && messageQueue.length === 0) {
+        // Listen for 'did-finish-load' event
+        console.log('Setting up did-finish-load listener')
+        win.webContents.on('did-finish-load', function () {
+            console.log('Web contents finished loading.');
+
+            // Process the message queue
+            while (messageQueue.length > 0) {
+                const { channel, args } = messageQueue.shift()!;
+                console.log('Sending queued message:', channel, ...args);
+                win?.webContents.send(channel, ...args);
+            }
+        });
+    }
+
     console.log('Sending', channel, ...args)
 
-    if (isWebContentsLoaded) {
+    if (!win.webContents.isLoading()) {
         console.log('Sending immediately:', channel, ...args);
         win.webContents.send(channel, ...args);
     } else {
         console.log('Queueing message:', channel, ...args);
         messageQueue.push({ channel, args });
     }
-
-    // Listen for 'did-finish-load' event
-    win.webContents.on('did-finish-load', function () {
-        isWebContentsLoaded = true;
-        console.log('Web contents finished loading.');
-
-        // Process the message queue
-        while (messageQueue.length > 0) {
-            const { channel, args } = messageQueue.shift()!;
-            console.log('Sending queued message:', channel, ...args);
-            win?.webContents.send(channel, ...args);
-        }
-    });
 }
 
 export function sendColor(color: string) {
