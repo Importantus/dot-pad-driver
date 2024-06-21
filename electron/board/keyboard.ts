@@ -1,50 +1,39 @@
-import { dispatch } from '../controller';
+import { ControllerAction, dispatch } from '../controller';
 import { globalShortcut } from 'electron';
+
 let registeredKeys = false;
 
-//TODO: Probably a better way to do this, but whatever
+const keyMap: { [key: string]: ControllerAction } = {
+    'num1': { type: 'btn_rect_left' },
+    'num2': { type: 'btn_circ_left' },
+    'num4': { type: 'btn_semcirc_left' },
+    // 'num5': { type: 'btn_rect_center' },
+    'num6': { type: 'btn_semcirc_right' },
+    'num7': { type: 'btn_circ_right' },
+    'num8': { type: 'btn_semcirc_right_up' },
+    'num9': { type: 'btn_semcirc_right_down' },
+}
+
 function registerKeyboardEvents() {
 
     if (registeredKeys) {
         console.log('Removing keyboard debug event listeners...');
-        globalShortcut.unregister('num1');
-        globalShortcut.unregister('num2');
-        globalShortcut.unregister('num4');
-        globalShortcut.unregister('num5');
-        globalShortcut.unregister('num6');
-        globalShortcut.unregister('num7');
-        globalShortcut.unregister('num8');
-        globalShortcut.unregister('num9');
+        for (const key in keyMap) {
+            globalShortcut.unregister(key);
+        }
         registeredKeys = false;
         return;
     }
+
     console.log('Adding keyboard debug event listeners...');
 
-    globalShortcut.register('num1', () => {
-        dispatch({ type: 'btn_rect_left' })
-    });
-    globalShortcut.register('num2', () => {
-        dispatch({ type: 'btn_circ_left' })
-    });
-    globalShortcut.register('num4', () => {
-        dispatch({ type: 'btn_semcirc_left' })
-    });
-    //TODO: Enable Keyboard center button shortcut
-    // globalShortcut.register('num5', () => {
-    //     dispatch({ type: 'btn_rect_center' })
-    // });
-    globalShortcut.register('num6', () => {
-        dispatch({ type: 'btn_semcirc_right' })
-    });
-    globalShortcut.register('num7', () => {
-        dispatch({ type: 'btn_circ_right' })
-    });
-    globalShortcut.register('num8', () => {
-        dispatch({ type: 'btn_semcirc_right_up' })
-    });
-    globalShortcut.register('num9', () => {
-        dispatch({ type: 'btn_semcirc_right_down' })
-    });
+    for (const key in keyMap) {
+        globalShortcut.register(key, () => {
+            console.log('Key pressed:', key);
+            dispatch(keyMap[key]);
+        });
+    }
+
     registeredKeys = true;
 }
 
