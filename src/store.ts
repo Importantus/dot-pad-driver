@@ -15,7 +15,7 @@ export const useStore = defineStore({
         frontendLoaded: false,
         state: UIStates.uninitialized,
         initialized: false,
-        cameraId: JSON.parse(localStorage.getItem("cameraId") || "null"),
+        cameraInfo: JSON.parse(localStorage.getItem("cameraInfo") || "null") as MediaDeviceInfo | null
     }),
     actions: {
         async init() {
@@ -49,9 +49,9 @@ export const useStore = defineStore({
             this.initialized = true;
             this.frontendLoaded = true;
         },
-        setCameraId(cameraId: string) {
-            this.cameraId = cameraId;
-            localStorage.setItem("cameraId", JSON.stringify(cameraId));
+        setCameraId(cameraInfo: MediaDeviceInfo) {
+            this.cameraInfo = cameraInfo;
+            localStorage.setItem("cameraInfo", JSON.stringify(cameraInfo));
         }
     },
 })

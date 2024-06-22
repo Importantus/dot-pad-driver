@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import CameraSelector from './CameraSelector.vue';
 import { onMounted, ref, watch } from 'vue';
 import { useStore } from '../store';
 import { UIStates } from '../../shared/constants';
@@ -27,48 +28,53 @@ onMounted(() =>
     enableCam()
 )
 
+watch(() => store.cameraInfo, () => {
+    if (store.cameraInfo !== null) {
+        resetFacePostition();
+        enableCam();
+    }
+})
+
 // Enable the live webcam view and start detection.
-function enableCam() {
+async function enableCam() {
+
+    const mediaDevices = await navigator.mediaDevices.enumerateDevices();
+    const videoDevices = mediaDevices.filter((device) => device.kind === "videoinput");
+
+    if (videoDevices.length === 0) {
+        console.log("No video devices found.");
+        return;
+    }
+
+    // Check if the user has a saved video device.
+    let videoDevice = videoDevices.find((device) => device.deviceId === store.cameraInfo?.deviceId);
+
+    // If not, use the first video device.
+    if (!videoDevice) {
+        videoDevice = videoDevices[0];
+        store.setCameraId(videoDevice);
+    }
+
+    // If the video element is not loaded yet, wait for it.
     if (!video) {
         console.log("Wait! Video not loaded yet.");
         video = document.getElementById("video") as HTMLVideoElement;
         window.requestAnimationFrame(enableCam);
         return;
     }
-
-    navigator.mediaDevices.enumerateDevices().then((devices) => {
-        const videoDevices = devices.filter((device) => device.kind === "videoinput");
-        if (videoDevices.length === 0) {
-            console.log("No video devices found.");
+    // Activate the webcam stream.
+    navigator.mediaDevices.getUserMedia({
+        video: {
+            deviceId: videoDevice.deviceId,
+        },
+        audio: false
+    }).then((stream) => {
+        if (!video) {
+            console.log("Wait! Video not loaded yet.");
             return;
         }
-
-        //TODO: Make a way to select the camera device.
-        let videoDevice = videoDevices[0];
-
-        //Debugging: Force override the camera device.
-        let debugOverrideCamIndex = import.meta.env.VITE_DEBUG_OVERRIDE_WEBCAM_DEVICE_ID;
-        if (debugOverrideCamIndex > -1) {
-            console.log("DEBUG: Overriding camera device with index: ", debugOverrideCamIndex);
-            videoDevice = videoDevices[debugOverrideCamIndex];
-        }
-
-        console.log("Using video device: ", videoDevice.label);
-
-        // Activate the webcam stream.
-        navigator.mediaDevices.getUserMedia({
-            video: {
-                deviceId: videoDevice.deviceId,
-            },
-            audio: false
-        }).then((stream) => {
-            if (!video) {
-                console.log("Wait! Video not loaded yet.");
-                return;
-            }
-            video.srcObject = stream;
-            webcamRunning.value = true;
-        });
+        video.srcObject = stream;
+        webcamRunning.value = true;
     });
 }
 
@@ -161,8 +167,18 @@ async function predictWebcam() {
 
 <template>
     <div>
-        <div class="w-full max-w-full aspect-video overflow-hidden rounded-md">
-            <video class="w-full min-h-full -scale-x-100" id="video" autoplay></video>
+        <div
+            class="w-full max-w-full aspect-video overflow-hidden rounded-md bg-gray-900 flex justify-center items-center">
+            <video v-if="store.cameraInfo !== null" class="w-full min-h-full -scale-x-100" id="video" autoplay></video>
+            <div v-else>
+                <div class="text-center">No camera found.</div>
+            </div>
+        </div>
+        <div class="flex gap-2 mt-2">
+            <CameraSelector class="w-1/2 flex-shrink-0" />
+            <button @click="resetFacePostition()" class="p-2 bg-gray-800 text-white rounded w-full text-center">Reset
+                face
+                position</button>
         </div>
     </div>
 </template>
