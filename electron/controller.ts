@@ -48,6 +48,8 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             console.log('Disconnect controller')
             // Send disconnected to frontend
             sendDisconnect()
+            // Send uninitialized to frontend
+            sendState(UIStates.uninitialized)
             return { type: 'disconnected' }
         })
         .with([{ type: P.not('disconnected') }, { type: 'connect' }], ([state]) => {
