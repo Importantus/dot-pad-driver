@@ -3,9 +3,12 @@ import { leftClick, rightClick } from './mouseControl/mouseClick';
 import { showBootupAnimation, showColor, showShutdownAnimation } from './board/strip';
 import { Colors } from './constants';
 import { startFaceTracking, stopFaceTracking } from './mouseControl/faceMove';
-import { sendReady } from './renderer/mainToRenderer';
+import { sendConntect, sendDisconnect, sendReady } from './renderer/mainToRenderer';
+import { initBoard } from './board/board';
+import { registerRendererEvents } from './renderer/rendererToMain';
 
 type ControllerState =
+    | { type: 'disconnected' }
     | { type: 'uninitialized' }
     | { type: 'idle' }
     | { type: 'browsercontrol' }
@@ -13,6 +16,8 @@ type ControllerState =
     | { type: 'speechrecognition' }
 
 export type ControllerAction =
+    | { type: 'disconnect' }
+    | { type: 'connect'; port: string }
     | { type: 'bootup' }
     | { type: 'shutdown' }
     | { type: 'btn_rect_left' }
@@ -24,7 +29,7 @@ export type ControllerAction =
     | { type: 'btn_semcirc_right_down' }
 
 
-let state: ControllerState = { type: 'uninitialized' }
+let state: ControllerState = process.env.DEBUG_KEYBOARD_INPUT_MODE === 'true' ? { type: 'uninitialized' } : { type: 'disconnected' }
 
 export function dispatch(action: ControllerAction) {
     state = stateReducer(state, action)
@@ -32,7 +37,31 @@ export function dispatch(action: ControllerAction) {
 
 function stateReducer(state: ControllerState, action: ControllerAction): ControllerState {
     return match<[ControllerState, ControllerAction], ControllerState>([state, action])
+        .with([{ type: 'disconnected' }, { type: 'connect' }], ([_, action]) => {
+            console.log('Connect controller')
+            initBoard(action.port)
+            // Send connected to frontend
+            sendConntect()
+            return { type: 'uninitialized' }
+        })
+        .with([{ type: P.not('disconnected') }, { type: 'disconnect' }], ([_]) => {
+            console.log('Disconnect controller')
+            // Send disconnected to frontend
+            sendDisconnect()
+            return { type: 'disconnected' }
+        })
+        .with([{ type: P.not('disconnected') }, { type: 'connect' }], ([state]) => {
+            console.error('Controller is already connected. Disconnect first.')
+            return state
+        })
+        .with([{ type: 'disconnected' }, { type: P.not('connect') }], ([state]) => {
+            console.error('Controller is disconnected. Connect first.')
+            return state
+        })
         .with([{ type: 'uninitialized' }, { type: 'bootup' }], ([_]) => {
+            console.log('Initialize controller')
+            // Register renderer events (e.g. face tracking)
+            registerRendererEvents()
             // Show bootup animation on lightstrip
             showBootupAnimation();
             // Send ready to backend

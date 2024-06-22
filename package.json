@@ -15,7 +15,9 @@
     "firmata": "^2.3.0",
     "node-pixel": "github:Importantus/node-pixel",
     "robotjs": "^0.6.0",
+    "serialport": "^12.0.0",
     "ts-pattern": "^5.2.0",
+    "usb": "^2.13.0",
     "vue": "^3.4.21"
   },
   "devDependencies": {
