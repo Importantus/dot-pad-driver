@@ -1,5 +1,4 @@
 import { createRequire } from 'node:module'
-import { sendStartFaceTracking, sendStopFaceTracking } from '../renderer/mainToRenderer'
 
 const require = createRequire(import.meta.url)
 const robot = require('robotjs')
@@ -11,14 +10,4 @@ export function handleFaceMove(event: Electron.IpcMainEvent, args: [number, numb
     const newY = screenSize.height * args[1]
     robot.moveMouse(newX, newY)
     event.reply('face-move-reply', 'Roger that!')
-}
-
-export function startFaceTracking() {
-    console.log('Starting face tracking')
-    sendStartFaceTracking()
-}
-
-export function stopFaceTracking() {
-    console.log('Stopping face tracking')
-    sendStopFaceTracking()
 }

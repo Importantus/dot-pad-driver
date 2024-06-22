@@ -2,7 +2,6 @@ import { match, P } from 'ts-pattern';
 import { leftClick, rightClick } from './mouseControl/mouseClick';
 import { showBootupAnimation, showColor, showShutdownAnimation } from './board/strip';
 import { Colors, UIStates } from '../shared/constants';
-import { startFaceTracking, stopFaceTracking } from './mouseControl/faceMove';
 import { sendConntect, sendDisconnect, sendReady, sendState } from './renderer/mainToRenderer';
 import { initBoard } from './board/board';
 import { registerRendererEvents } from './renderer/rendererToMain';
@@ -79,8 +78,6 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             console.log('Shutdown controller')
             // Show shutdown animation on lightstrip
             showShutdownAnimation();
-            // Send uninitialized to frontend
-            sendState(UIStates.uninitialized)
             return { type: 'uninitialized' }
         })
         .with([{ type: P.not('uninitialized') }, { type: 'bootup' }], ([state]) => {
@@ -115,8 +112,6 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
         })
         .with([{ type: P.union('idle', 'speechrecognition') }, { type: 'btn_circ_right' }], ([_]) => {
             console.log('Start eye tracking')
-            // Activate eye tracking
-            startFaceTracking()
             // Change color of lightstrip to indicate eye tracking
             showColor(Colors.FACE_TRACKING)
             // Send face tracking to frontend
@@ -132,8 +127,6 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'idle' }
         })
         .with([{ type: 'eytracking' }, { type: P.union('btn_circ_right', 'btn_rect_left', 'btn_circ_left') }], ([_]) => {
-            // Stop eye tracking
-            stopFaceTracking()
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
             // Send idle to frontend
