@@ -1,7 +1,7 @@
 export enum Colors {
-    BROWSER_CONTROL = '#ff0000',
-    FACE_TRACKING = '#00ff00',
-    SPEECH_RECOGNITION = '#0000ff',
+    BROWSER_CONTROL = '#BE8125',
+    FACE_TRACKING = '#2F9B39',
+    SPEECH_RECOGNITION = '#25B5BE',
     IDLE = '#ffffff',
     BLACK = '#000000',
     GREY = '#808080'
