@@ -13,6 +13,7 @@
     "@mediapipe/tasks-vision": "^0.10.14",
     "dotenv": "^16.4.5",
     "firmata": "^2.3.0",
+    "lucide-vue-next": "^0.396.0",
     "node-pixel": "github:Importantus/node-pixel",
     "pinia": "^2.1.7",
     "robotjs": "^0.6.0",
