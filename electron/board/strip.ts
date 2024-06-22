@@ -1,4 +1,4 @@
-import { Colors } from "../constants";
+import { Colors } from "../../shared/constants";
 import { strip } from "./board";
 
 function setColor(color: string) {
