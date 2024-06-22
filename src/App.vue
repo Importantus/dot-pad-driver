@@ -1,5 +1,8 @@
 <script setup lang="ts">
+import DotBar from './components/DotBar.vue';
 import FaceTracking from './components/FaceTracking.vue';
+import LoadingScreen from './components/LoadingScreen.vue';
+import NotConnected from './components/NotConnected.vue';
 import StatusBar from './components/StatusBar.vue';
 import { Connection, useStore } from './store';
 
@@ -8,14 +11,41 @@ store.init();
 </script>
 
 <template>
-  <div class="w-screen h-screen overflow-hidden text-white">
+  <div class="w-screen h-screen overflow-hidden text-white bg-[#131313]">
     <StatusBar />
-    <div class="p-5">
-      <div v-if="store.connection === Connection.DISCONNECTED">Not connected</div>
-      <div v-else-if="store.connection === Connection.LOADING || !store.frontendLoaded">Connecting...</div>
-      <div v-else-if="store.connection === Connection.READY && store.frontendLoaded">
-        <FaceTracking />
-      </div>
+    <div class="px-8 overflow-hidden">
+      <TransitionGroup name="rotate" tag="div">
+        <div v-if="store.connection === Connection.DISCONNECTED">
+          <NotConnected />
+        </div>
+        <div v-else-if="store.connection === Connection.LOADING || !store.frontendLoaded">
+          <LoadingScreen />
+        </div>
+        <div v-else-if="store.connection === Connection.READY && store.frontendLoaded">
+          <DotBar class="mt-8 mb-16" />
+          <FaceTracking />
+        </div>
+      </TransitionGroup>
     </div>
   </div>
 </template>
+
+<style scoped>
+.rotate-move,
+/* apply transition to moving elements */
+.rotate-enter-active,
+.rotate-leave-active {
+  transition: all 0.2s ease;
+  z-index: 1;
+}
+
+.rotate-enter-from {
+  opacity: 0;
+  transform: translateX(80%);
+}
+
+.rotate-leave-to {
+  opacity: 0;
+  transform: translateX(-80%)
+}
+</style>
