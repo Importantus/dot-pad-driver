@@ -1,3 +1,4 @@
+import { UIState } from "../../shared/constants";
 import { win } from "../main"
 
 let messageQueue: { channel: string, args: any[] }[] = [];
@@ -38,12 +39,8 @@ export function sendColor(color: string) {
     send('color', color)
 }
 
-export function sendStartFaceTracking() {
-    send('start-face-tracking')
-}
-
-export function sendStopFaceTracking() {
-    send('stop-face-tracking')
+export function sendState(state: UIState) {
+    send('state-change', state)
 }
 
 export function sendReady() {

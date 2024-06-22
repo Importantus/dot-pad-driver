@@ -1,9 +1,9 @@
 import { match, P } from 'ts-pattern';
 import { leftClick, rightClick } from './mouseControl/mouseClick';
 import { showBootupAnimation, showColor, showShutdownAnimation } from './board/strip';
-import { Colors } from './constants';
+import { Colors, UIStates } from '../shared/constants';
 import { startFaceTracking, stopFaceTracking } from './mouseControl/faceMove';
-import { sendConntect, sendDisconnect, sendReady } from './renderer/mainToRenderer';
+import { sendConntect, sendDisconnect, sendReady, sendState } from './renderer/mainToRenderer';
 import { initBoard } from './board/board';
 import { registerRendererEvents } from './renderer/rendererToMain';
 
@@ -39,9 +39,10 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
     return match<[ControllerState, ControllerAction], ControllerState>([state, action])
         .with([{ type: 'disconnected' }, { type: 'connect' }], ([_, action]) => {
             console.log('Connect controller')
-            initBoard(action.port)
             // Send connected to frontend
             sendConntect()
+            // Initialize board
+            initBoard(action.port)
             return { type: 'uninitialized' }
         })
         .with([{ type: P.not('disconnected') }, { type: 'disconnect' }], ([_]) => {
@@ -66,6 +67,8 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             showBootupAnimation();
             // Send ready to backend
             sendReady()
+            // Send idle to frontend
+            sendState(UIStates.idle)
             return { type: 'idle' }
         })
         .with([{ type: 'uninitialized' }, { type: 'shutdown' }], ([_]) => {
@@ -76,6 +79,8 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             console.log('Shutdown controller')
             // Show shutdown animation on lightstrip
             showShutdownAnimation();
+            // Send uninitialized to frontend
+            sendState(UIStates.uninitialized)
             return { type: 'uninitialized' }
         })
         .with([{ type: P.not('uninitialized') }, { type: 'bootup' }], ([state]) => {
@@ -89,13 +94,15 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
         .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_rect_left' }], ([_]) => {
             // TODO: Launch Browser 
             // TODO: Change color of lightstrip to indicate browser control
-            // TODO: Change color of UI to indicate browser control
+            // Send browser control to frontend
+            sendState(UIStates.browsercontrol)
             return { type: 'browsercontrol' }
         })
         .with([{ type: P.union('idle', 'eytracking') }, { type: 'btn_circ_left' }], ([_]) => {
             // TODO: Start speech recognition
             // TODO: Change color of lightstrip to indicate speech recognition
-            // TODO: Change color of UI to indicate speech recognition
+            // Send speech recognition to frontend
+            sendState(UIStates.speechrecognition)
             return { type: 'speechrecognition' }
         })
         .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_semcirc_left' }], ([_]) => {
@@ -112,7 +119,8 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             startFaceTracking()
             // Change color of lightstrip to indicate eye tracking
             showColor(Colors.FACE_TRACKING)
-            // TODO: Change color of UI to indicate eye tracking
+            // Send face tracking to frontend
+            sendState(UIStates.facetracking)
             return { type: 'eytracking' }
         })
         .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_up' }], ([_]) => {
@@ -128,14 +136,16 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             stopFaceTracking()
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
-            // TODO: Change color of UI to indicate idle
+            // Send idle to frontend
+            sendState(UIStates.idle)
             return { type: 'idle' }
         })
         .with([{ type: 'speechrecognition' }, { type: 'btn_circ_left' }], ([_]) => {
             // TODO: Stop speech recognition
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
-            // TODO: Change color of UI to indicate idle
+            // Send idle to frontend
+            sendState(UIStates.idle)
             return { type: 'idle' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_rect_left' }], ([_]) => {
