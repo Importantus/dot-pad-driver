@@ -13,6 +13,11 @@ store.init();
 <template>
   <div class="w-screen h-screen overflow-hidden text-white bg-[#131313]">
     <StatusBar />
+    <div v-if="store.keyboardDebug">
+      <div class="fixed p-2 bg-red-900 text-white text-xs -rotate-45 z-10 w-40 text-center -left-9">
+        Debug mode
+      </div>
+    </div>
     <div class="px-8 overflow-hidden">
       <TransitionGroup name="rotate" tag="div">
         <div v-if="store.connection === Connection.DISCONNECTED">

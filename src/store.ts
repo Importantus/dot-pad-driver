@@ -15,7 +15,8 @@ export const useStore = defineStore({
         frontendLoaded: false,
         state: UIStates.uninitialized,
         initialized: false,
-        cameraInfo: JSON.parse(localStorage.getItem("cameraInfo") || "null") as MediaDeviceInfo | null
+        cameraInfo: JSON.parse(localStorage.getItem("cameraInfo") || "null") as MediaDeviceInfo | null,
+        keyboardDebug: false
     }),
     actions: {
         async init() {
@@ -40,6 +41,11 @@ export const useStore = defineStore({
             window.ipcRenderer.on("board-disconnected", () => {
                 console.log("Board disconnected.");
                 this.connection = Connection.DISCONNECTED;
+            });
+
+            window.ipcRenderer.on("keyboard-debug", () => {
+                console.log("Keyboard debug.");
+                this.keyboardDebug = true;
             });
 
             if (getFaceLandmarker() === null) {

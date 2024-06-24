@@ -54,3 +54,7 @@ export function sendConntect() {
 export function sendDisconnect() {
     send('board-disconnected')
 }
+
+export function sendKeyboardDebug() {
+    send('keyboard-debug')
+}
