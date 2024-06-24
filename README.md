@@ -48,9 +48,6 @@ The project contains an .env file with options for debugging. The options are as
 - `DEBUG_OPEN_DEVTOOLS_ON_STARTUP`: Set to `true` open the Chrome DevTools on startup.<br>
 **Default:** `false`
 
-- `VITE_DEBUG_OVERRIDE_WEBCAM_DEVICE_ID`: Set to the device id (index) of the webcam you want to use. Set to `-1` to use the default webcam.<br>
-**Default:** `-1`
-
 #### Keyboard Input Mode
 
 ***Warning***
