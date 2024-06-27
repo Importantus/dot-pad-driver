@@ -6,6 +6,9 @@ import { sendConntect, sendDisconnect, sendReady, sendState } from './renderer/m
 import { initBoard } from './board/board';
 import { registerRendererEvents } from './renderer/rendererToMain';
 import { scrollDown, scrollUp } from './mouseControl/mouseScroll';
+import { tabForward, tabBackward } from './keyboardControl/tabControl';
+import { startWindowsSpeech, stopWindowsSpeech } from './keyboardControl/speechControl';
+import { pressEnter } from './keyboardControl/keyControl';
 
 type ControllerState =
     | { type: 'disconnected' }
@@ -23,6 +26,7 @@ export type ControllerAction =
     | { type: 'btn_rect_left' }
     | { type: 'btn_circ_left' }
     | { type: 'btn_semcirc_left' }
+    | { type: 'btn_rect_center' }
     | { type: 'btn_semcirc_right' }
     | { type: 'btn_circ_right' }
     | { type: 'btn_semcirc_right_up' }
@@ -102,9 +106,9 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'browsercontrol' }
         })
         .with([{ type: P.union('idle', 'eytracking') }, { type: 'btn_circ_left' }], ([_]) => {
-            // TODO: Start speech recognition
             // TODO: Change color of lightstrip to indicate speech recognition
             // Send speech recognition to frontend
+            startWindowsSpeech();
             sendState(UIStates.speechrecognition)
             return { type: 'speechrecognition' }
         })
@@ -125,11 +129,11 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'eytracking' }
         })
         .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_up' }], ([state]) => {
-            // TODO: Press Tab
+            tabForward();
             return state
         })
         .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_down' }], ([state]) => {
-            // TODO: Press Shift+Tab
+            tabBackward();
             return state
         })
         .with([{ type: P.not('uninitialized') }, { type: 'rot_right_cw' }], ([state]) => {
@@ -140,6 +144,10 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             scrollUp();
             return state
         })
+        .with([{ type: P.not('uninitialized') }, { type: 'btn_rect_center' }], ([state]) => {
+            pressEnter();
+            return state
+        })
         .with([{ type: 'eytracking' }, { type: P.union('btn_circ_right', 'btn_rect_left', 'btn_circ_left') }], ([_]) => {
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
@@ -148,7 +156,7 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'idle' }
         })
         .with([{ type: 'speechrecognition' }, { type: 'btn_circ_left' }], ([_]) => {
-            // TODO: Stop speech recognition
+            stopWindowsSpeech();
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
             // Send idle to frontend
