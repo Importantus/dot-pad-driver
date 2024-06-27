@@ -9,6 +9,7 @@ import { scrollDown, scrollUp } from './mouseControl/mouseScroll';
 import { tabForward, tabBackward } from './keyboardControl/tabControl';
 import { startWindowsSpeech, stopWindowsSpeech } from './keyboardControl/speechControl';
 import { pressEnter } from './keyboardControl/keyControl';
+import { closeTab, launchBrowser, newTab, tabHistoryBackward, tabHistoryForward, tabSwitchBackward, tabSwitchForward } from './browser/control';
 
 type ControllerState =
     | { type: 'disconnected' }
@@ -99,7 +100,7 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'uninitialized' }
         })
         .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_rect_left' }], ([_]) => {
-            // TODO: Launch Browser 
+            launchBrowser();
             // TODO: Change color of lightstrip to indicate browser control
             // Send browser control to frontend
             sendState(UIStates.browsercontrol)
@@ -128,11 +129,11 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             sendState(UIStates.facetracking)
             return { type: 'eytracking' }
         })
-        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_up' }], ([state]) => {
+        .with([{ type: P.not(P.union('uninitialized', 'browsercontrol')) }, { type: 'btn_semcirc_right_up' }], ([state]) => {
             tabForward();
             return state
         })
-        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_down' }], ([state]) => {
+        .with([{ type: P.not(P.union('uninitialized', 'browsercontrol')) }, { type: 'btn_semcirc_right_down' }], ([state]) => {
             tabBackward();
             return state
         })
@@ -164,23 +165,31 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             return { type: 'idle' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_rect_left' }], ([_]) => {
-            // TODO: Stop browser control
+            sendState(UIStates.idle)
             return { type: 'idle' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_circ_left' }], ([_]) => {
-            // TODO: Open new Tab
+            newTab()
             return { type: 'browsercontrol' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_semcirc_left' }], ([_]) => {
-            // TODO: Change to previous Tab
+            tabSwitchBackward()
             return { type: 'browsercontrol' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_semcirc_right' }], ([_]) => {
-            // TODO: Change to next Tab
+            tabSwitchForward()
             return { type: 'browsercontrol' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_circ_right' }], ([_]) => {
-            // TODO: Close Tab
+            closeTab();
+            return { type: 'browsercontrol' }
+        })
+        .with([{ type: 'browsercontrol' }, { type: 'btn_semcirc_right_up' }], ([_]) => {
+            tabHistoryBackward();
+            return { type: 'browsercontrol' }
+        })
+        .with([{ type: 'browsercontrol' }, { type: 'btn_semcirc_right_down' }], ([_]) => {
+            tabHistoryForward();
             return { type: 'browsercontrol' }
         })
         .exhaustive()

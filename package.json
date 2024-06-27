@@ -16,6 +16,7 @@
     "keysender": "^2.3.0",
     "lucide-vue-next": "^0.396.0",
     "node-pixel": "github:Importantus/node-pixel",
+    "open": "^10.1.0",
     "pinia": "^2.1.7",
     "serialport": "^12.0.0",
     "ts-pattern": "^5.2.0",

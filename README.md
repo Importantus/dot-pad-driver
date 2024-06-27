@@ -27,6 +27,34 @@ npm install
 npm run dev
 ```
 
+### Troubleshooting
+
+If you encouter an issue related to serialport, while trying to run the application try the following:
+
+1. Uninstall serialport
+
+```bash
+npm uninstall serialport
+```
+
+2. Run the following command to rebuild:
+
+```bash
+npm rebuild
+```
+
+3. Install serialport again
+
+```bash
+npm install serialport
+```
+
+4. Start the development server without rebuilding
+
+```bash
+npm run dev
+```
+
 ### Debugging
 
 The project contains an .env file with options for debugging. The options are as follows:
