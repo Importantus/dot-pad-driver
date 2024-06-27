@@ -1,5 +1,6 @@
 import { ControllerAction, dispatch } from '../controller';
 import { globalShortcut } from 'electron';
+import { sendKeyboardDebug } from '../renderer/mainToRenderer';
 
 let registeredKeys = false;
 
@@ -33,6 +34,8 @@ function registerKeyboardEvents() {
             dispatch(keyMap[key]);
         });
     }
+
+    sendKeyboardDebug();
 
     registeredKeys = true;
 }
