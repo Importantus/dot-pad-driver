@@ -8,7 +8,7 @@ const keyMap: { [key: string]: ControllerAction } = {
     'num1': { type: 'btn_rect_left' },
     'num2': { type: 'btn_circ_left' },
     'num4': { type: 'btn_semcirc_left' },
-    // 'num5': { type: 'btn_rect_center' },
+    'num5': { type: 'btn_rect_center' },
     'num6': { type: 'btn_semcirc_right' },
     'num7': { type: 'btn_circ_right' },
     'num8': { type: 'btn_semcirc_right_up' },
