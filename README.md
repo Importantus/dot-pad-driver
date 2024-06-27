@@ -21,15 +21,7 @@ git clone
 npm install
 ```
 
-3. Rebuild dependencies
-
-> This step is necessary because some dependencies are native modules and need to be rebuilt for the current platform - namely electron.
-
-```bash
-npm run rebuild
-```
-
-4. Start the development server
+3. Start the development server
 
 ```bash
 npm run dev
