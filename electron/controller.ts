@@ -113,13 +113,13 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             sendState(UIStates.speechrecognition)
             return { type: 'speechrecognition' }
         })
-        .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_semcirc_left' }], ([_]) => {
+        .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_semcirc_left' }], ([state]) => {
             leftClick()
-            return { type: 'idle' }
+            return state
         })
-        .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_semcirc_right' }], ([_]) => {
+        .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_semcirc_right' }], ([state]) => {
             rightClick()
-            return { type: 'idle' }
+            return state
         })
         .with([{ type: P.union('idle', 'speechrecognition') }, { type: 'btn_circ_right' }], ([_]) => {
             console.log('Start eye tracking')
