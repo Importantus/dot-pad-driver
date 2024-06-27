@@ -1,12 +1,14 @@
 import { createRequire } from 'node:module'
 
 const require = createRequire(import.meta.url)
-const robot = require('robotjs')
+const { Hardware } = require('keysender')
+
+const desktop = new Hardware()
 
 export function rightClick() {
-    robot.mouseClick('right')
+    desktop.mouse.click('right')
 }
 
 export function leftClick() {
-    robot.mouseClick('left')
+    desktop.mouse.click('left')
 }
