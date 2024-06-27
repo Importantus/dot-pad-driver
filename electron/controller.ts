@@ -5,6 +5,7 @@ import { Colors, UIStates } from '../shared/constants';
 import { sendConntect, sendDisconnect, sendReady, sendState } from './renderer/mainToRenderer';
 import { initBoard } from './board/board';
 import { registerRendererEvents } from './renderer/rendererToMain';
+import { scrollDown, scrollUp } from './mouseControl/mouseScroll';
 
 type ControllerState =
     | { type: 'disconnected' }
@@ -26,6 +27,9 @@ export type ControllerAction =
     | { type: 'btn_circ_right' }
     | { type: 'btn_semcirc_right_up' }
     | { type: 'btn_semcirc_right_down' }
+    | { type: 'rot_right_cw' } // Rotate right clockwise
+    | { type: 'rot_right_ccw' } // Rotate right counter clockwise
+
 
 
 let state: ControllerState = process.env.DEBUG_KEYBOARD_INPUT_MODE === 'true' ? { type: 'uninitialized' } : { type: 'disconnected' }
@@ -120,13 +124,21 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             sendState(UIStates.facetracking)
             return { type: 'eytracking' }
         })
-        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_up' }], ([_]) => {
+        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_up' }], ([state]) => {
             // TODO: Press Tab
-            return { type: 'idle' }
+            return state
         })
-        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_down' }], ([_]) => {
+        .with([{ type: P.not('uninitialized') }, { type: 'btn_semcirc_right_down' }], ([state]) => {
             // TODO: Press Shift+Tab
-            return { type: 'idle' }
+            return state
+        })
+        .with([{ type: P.not('uninitialized') }, { type: 'rot_right_cw' }], ([state]) => {
+            scrollDown();
+            return state
+        })
+        .with([{ type: P.not('uninitialized') }, { type: 'rot_right_ccw' }], ([state]) => {
+            scrollUp();
+            return state
         })
         .with([{ type: 'eytracking' }, { type: P.union('btn_circ_right', 'btn_rect_left', 'btn_circ_left') }], ([_]) => {
             // Change color of lightstrip to indicate idle
