@@ -101,13 +101,15 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
         })
         .with([{ type: P.union('idle', 'eytracking', 'speechrecognition') }, { type: 'btn_rect_left' }], ([_]) => {
             launchBrowser();
-            // TODO: Change color of lightstrip to indicate browser control
+            // Change color of lightstrip to indicate browser control
+            showColor(Colors.BROWSER_CONTROL)
             // Send browser control to frontend
             sendState(UIStates.browsercontrol)
             return { type: 'browsercontrol' }
         })
         .with([{ type: P.union('idle', 'eytracking') }, { type: 'btn_circ_left' }], ([_]) => {
-            // TODO: Change color of lightstrip to indicate speech recognition
+            // Change color of lightstrip to indicate speech recognition
+            showColor(Colors.SPEECH_RECOGNITION)
             // Send speech recognition to frontend
             startWindowsSpeech();
             sendState(UIStates.speechrecognition)
@@ -166,6 +168,7 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_rect_left' }], ([_]) => {
             sendState(UIStates.idle)
+            showColor(Colors.IDLE)
             return { type: 'idle' }
         })
         .with([{ type: 'browsercontrol' }, { type: 'btn_circ_left' }], ([_]) => {
