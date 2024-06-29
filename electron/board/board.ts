@@ -15,11 +15,46 @@ type Button = {
 }
 
 const buttons: Button[] = [
-    // {
-    //     pin: 10,
-    //     action: { type: 'btn_circ_right' },
-    //     prevValue: 1
-    // }
+    {
+        pin: 12,
+        action: { type: 'btn_rect_left' },
+        prevValue: 1
+    },
+    {
+        pin: 11,
+        action: { type: 'btn_circ_left' },
+        prevValue: 1
+    },
+    {
+        pin: 10,
+        action: { type: 'btn_semcirc_left' },
+        prevValue: 1
+    },
+    {
+        pin: 9,
+        action: { type: 'btn_rect_center' },
+        prevValue: 1
+    },
+    {
+        pin: 8,
+        action: { type: 'btn_semcirc_right' },
+        prevValue: 1
+    },
+    {
+        pin: 7,
+        action: { type: 'btn_circ_right' },
+        prevValue: 1
+    },
+    {
+        pin: 5,
+        action: { type: 'btn_semcirc_right_up' },
+        prevValue: 1
+    },
+    {
+        pin: 4,
+        action: { type: 'btn_semcirc_right_down' },
+        prevValue: 1
+    }
 ]
 
 type RotateEncoder = {
@@ -52,7 +87,7 @@ export function initBoard(port: string) {
             // @ts-ignore
             pin: 6,
             data: 6,
-            length: 15,
+            length: 11,
             firmata: board
         });
 
@@ -62,6 +97,7 @@ export function initBoard(port: string) {
                 setTimeout(() => {
                     let value = board.pins[button.pin].value;
                     if (value === 1 && button.prevValue === 0) {
+                        console.log('Button pressed', button.pin)
                         dispatch(button.action);
                     }
                     button.prevValue = value;
