@@ -158,7 +158,7 @@ function stateReducer(state: ControllerState, action: ControllerAction): Control
             sendState(UIStates.idle)
             return { type: 'idle' }
         })
-        .with([{ type: 'speechrecognition' }, { type: 'btn_circ_left' }], ([_]) => {
+        .with([{ type: 'speechrecognition' }, { type: P.union('btn_circ_right', 'btn_rect_left', 'btn_circ_left') }], ([_]) => {
             stopWindowsSpeech();
             // Change color of lightstrip to indicate idle
             showColor(Colors.IDLE)
