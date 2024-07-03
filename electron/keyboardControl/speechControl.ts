@@ -15,7 +15,7 @@ export function startWindowsSpeech() {
 }
 
 export function stopWindowsSpeech() {
-    exec(killCommand, (err, stdout, stderr) => {
+    exec(killCommand, (err, stdout) => {
         if (err) {
             console.error(err)
             return

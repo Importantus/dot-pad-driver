@@ -5,7 +5,7 @@ import { useStore } from '../store';
 
 const store = useStore();
 
-const props = defineProps<{
+defineProps<{
     state: UIState;
     icon: typeof HelpCircle
 }>();

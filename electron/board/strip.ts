@@ -29,20 +29,20 @@ function fillInColor(color: string) {
     }, 30);
 }
 
-function clearOutColor() {
-    if (!strip) {
-        console.log('No strip available')
-        return
-    }
-    let pos = strip.length - 1;
-    const fadeOut = setInterval(function () {
-        strip.pixel(pos--).color('#000');
-        strip.show();
-        if (pos < 0) {
-            clearInterval(fadeOut);
-        }
-    }, 30);
-}
+// function clearOutColor() {
+//     if (!strip) {
+//         console.log('No strip available')
+//         return
+//     }
+//     let pos = strip.length - 1;
+//     const fadeOut = setInterval(function () {
+//         strip.pixel(pos--).color('#000');
+//         strip.show();
+//         if (pos < 0) {
+//             clearInterval(fadeOut);
+//         }
+//     }, 30);
+// }
 
 export function showBootupAnimation() {
     fillInColor(Colors.IDLE)
