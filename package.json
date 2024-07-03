@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "github:build": "vue-tsc && vite build",
     "build": "vue-tsc && vite build && electron-builder",
     "preview": "vite preview",
     "rebuild": "electron-rebuild"
