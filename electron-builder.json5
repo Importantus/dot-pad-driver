@@ -1,43 +1,61 @@
 // @see - https://www.electron.build/configuration/configuration
 {
-  "$schema": "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
-  "appId": "YourAppID",
-  "asar": true,
-  "productName": "YourAppName",
-  "directories": {
-    "output": "release/${version}"
+  $schema: "https://raw.githubusercontent.com/electron-userland/electron-builder/master/packages/app-builder-lib/scheme.json",
+  appId: "driver.dotpad",
+  asar: true,
+  productName: "dotpad",
+  directories: {
+    output: "release/${version}",
   },
-  "files": [
-    "dist",
-    "dist-electron"
-  ],
-  "mac": {
-    "target": [
-      "dmg"
-    ],
-    "artifactName": "${productName}-Mac-${version}-Installer.${ext}"
+  files: ["dist", "dist-electron"],
+  mac: {
+    icon: "public/logo_512.png",
+    target: ["dmg"],
+    artifactName: "${productName}_${version}.${ext}",
   },
-  "win": {
-    "target": [
+  win: {
+    icon: "public/logo_512.ico",
+    target: [
       {
-        "target": "nsis",
-        "arch": [
-          "x64"
-        ]
-      }
+        target: "nsis",
+        arch: ["x64"],
+      },
     ],
-    "artifactName": "${productName}-Windows-${version}-Setup.${ext}"
+    artifactName: "${productName_-${version}.${ext}",
   },
-  "nsis": {
-    "oneClick": false,
-    "perMachine": false,
-    "allowToChangeInstallationDirectory": true,
-    "deleteAppDataOnUninstall": false
+  nsis: {
+    oneClick: false,
+    perMachine: false,
+    allowToChangeInstallationDirectory: true,
+    deleteAppDataOnUninstall: false,
   },
-  "linux": {
-    "target": [
-      "AppImage"
+  linux: {
+    icon: "public/logo_512.png",
+    desktop: {
+      StartupNotify: "false",
+      Encoding: "UTF-8",
+      MimeType: "x-scheme-handler/deeplink",
+    },
+    target: ["AppImage", "deb"],
+    artifactName: "${productName}_${version}.${ext}",
+  },
+  dmg: {
+    contents: [
+      {
+        x: 255,
+        y: 85,
+        type: "file",
+      },
+      {
+        x: 253,
+        y: 325,
+        type: "link",
+        path: "/Applications",
+      },
     ],
-    "artifactName": "${productName}-Linux-${version}.${ext}"
-  }
+    window: {
+      width: 500,
+      height: 500,
+    },
+  },
 }
